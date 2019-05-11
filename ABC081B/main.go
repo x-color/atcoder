@@ -6,17 +6,16 @@ func main() {
 	var n int
 	fmt.Scan(&n)
 
-	nums := make([]int, n)
+	var num, bits int
 	for i := 0; i < n; i++ {
-		fmt.Scan(&nums[i])
+		fmt.Scan(&num)
+		bits |= num
 	}
-	for ans := 0; ; ans++ {
-		for i, num := range nums {
-			if num%2 == 1 {
-				fmt.Println(ans)
-				return
-			}
-			nums[i] /= 2
+	for i := 0; ; i++ {
+		if bits&1 == 1 {
+			fmt.Println(i)
+			return
 		}
+		bits >>= 1
 	}
 }
