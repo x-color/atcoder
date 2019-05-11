@@ -13,9 +13,6 @@ func main() {
 	for ans := 0; ; ans++ {
 		for i, num := range nums {
 			if num%2 == 1 {
-				for j := 0; j < i; j++ {
-					nums[j] *= 2
-				}
 				fmt.Println(ans)
 				return
 			}
