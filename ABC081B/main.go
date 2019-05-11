@@ -1,21 +1,26 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
 
 func main() {
-	var n int
-	fmt.Scan(&n)
-
-	var num, bits int
-	for i := 0; i < n; i++ {
-		fmt.Scan(&num)
-		bits |= num
+	s := bufio.NewScanner(os.Stdin)
+	s.Split(bufio.ScanWords)
+	s.Scan()
+	s.Text()
+	var b int
+	for s.Scan() {
+		n, _ := strconv.Atoi(s.Text())
+		b |= n
 	}
-	for i := 0; ; i++ {
-		if bits&1 == 1 {
-			fmt.Println(i)
-			return
-		}
-		bits >>= 1
+	c := 0
+	for b&1 == 0 {
+		b >>= 1
+		c++
 	}
+	fmt.Println(c)
 }
