@@ -2,23 +2,26 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 )
 
 func main() {
-	var s string
-	fmt.Scan(&s)
+	b, _ := ioutil.ReadAll(os.Stdin)
+	s := strings.TrimSpace(string(b))
 
 	words := []string{"dream", "dreamer", "erase", "eraser"}
-	for len(s) > 0 {
-		l := len(s)
-		for _, word := range words {
-			s = strings.TrimSuffix(s, word)
-		}
-		if len(s) == l {
-			fmt.Println("NO")
-			return
+	i := len(s)
+	for j := 0; j < 4; j++ {
+		if strings.HasSuffix(s[:i], words[j]) {
+			i -= len(words[j])
+			j = -1
 		}
 	}
-	fmt.Println("YES")
+	if i == 0 {
+		fmt.Println("YES")
+	} else {
+		fmt.Println("NO")
+	}
 }
