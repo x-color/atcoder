@@ -33,28 +33,37 @@ func main() {
 	}
 
 	cl := make([]int, m)
-	for k := range bcm {
-		cl = append(cl, k)
+	for c := range bcm {
+		cl = append(cl, c)
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(cl)))
 
 	last := 0
 	sort.Ints(al)
 	for _, c := range cl {
-		for i := 0; i < bcm[c]; i++ {
-			if i+last == len(al) || al[i+last] >= c {
-				goto G
-			}
-			al[i+last] = c
+		end := min(len(al), last+bcm[c])
+		for i := last; i < end && al[i] < c; i++ {
+			al[i] = c
 		}
-		last += bcm[c]
+		if last = end; last >= len(al) {
+			break
+		}
 	}
 
-G:
+	fmt.Println(sum(al))
+}
 
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
+func sum(l []int) int {
 	t := 0
-	for _, a := range al {
-		t += a
+	for _, v := range l {
+		t += v
 	}
-	fmt.Println(t)
+	return t
 }
