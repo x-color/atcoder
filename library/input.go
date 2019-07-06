@@ -2,10 +2,15 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 )
+
+func wordScanner() *bufio.Scanner {
+	s := bufio.NewScanner(os.Stdin)
+	s.Split(bufio.ScanWords)
+	return s
+}
 
 func scanInts(s *bufio.Scanner, vals ...*int) {
 	for i := range vals {
