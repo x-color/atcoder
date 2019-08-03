@@ -13,13 +13,8 @@ type Set struct {
 }
 
 func main() {
-	var n int
 	s := wordScanner()
-	scanInts(s, &n)
-	a := make([]int, n)
-	for i := 0; i < n; i++ {
-		scanInts(s, &a[i])
-	}
+	n, a := scanNAndInts(s)
 
 	var bmax, amax int
 	l := make([]Set, n)
@@ -41,12 +36,16 @@ func wordScanner() *bufio.Scanner {
 	return s
 }
 
-func scanInts(s *bufio.Scanner, vals ...*int) {
-	for i := range vals {
+func scanNAndInts(s *bufio.Scanner) (int, []int) {
+	s.Scan()
+	n, _ := strconv.Atoi(s.Text())
+	vals := make([]int, n)
+	for i := 0; i < n; i++ {
 		s.Scan()
-		n, _ := strconv.Atoi(s.Text())
-		*vals[i] = n
+		m, _ := strconv.Atoi(s.Text())
+		vals[i] = m
 	}
+	return n, vals
 }
 
 func max(x, y int) int {
