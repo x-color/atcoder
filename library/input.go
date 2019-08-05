@@ -27,14 +27,18 @@ func scanStrings(s *bufio.Scanner, vals ...*string) {
 	}
 }
 
-func scanNAndInts(s *bufio.Scanner) (int, []int) {
+func scanNAndIntSlice(s *bufio.Scanner) (int, []int) {
 	s.Scan()
 	n, _ := strconv.Atoi(s.Text())
+	return n, scanIntSlice(s, n)
+}
+
+func scanIntSlice(s *bufio.Scanner, n int) []int {
 	vals := make([]int, n)
-	for i := 0; i < n; i++ {
+	for i := range vals {
 		s.Scan()
 		m, _ := strconv.Atoi(s.Text())
 		vals[i] = m
 	}
-	return n, vals
+	return vals
 }
