@@ -6,9 +6,11 @@ import (
 	"strconv"
 )
 
-func wordScanner() *bufio.Scanner {
+func wordScanner(n int) *bufio.Scanner {
 	s := bufio.NewScanner(os.Stdin)
 	s.Split(bufio.ScanWords)
+	b := make([]byte, n)
+	s.Buffer(b, n)
 	return s
 }
 
