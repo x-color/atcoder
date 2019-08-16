@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -11,20 +12,14 @@ func main() {
 	s := wordScanner(100001)
 	scanStrings(s, &t)
 
-	ans := 0
-	for i := 0; len(t) > i+1; {
-		if d := t[i : i+2]; d == "01" || d == "10" {
-			ans += 2
-			t = t[:i] + t[i+2:]
-			if i > 0 {
-				i--
-			}
-		} else {
-			i++
-		}
-	}
+	fmt.Println(2 * min(strings.Count(t, "0"), strings.Count(t, "1")))
+}
 
-	fmt.Println(ans)
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
 }
 
 func wordScanner(n int) *bufio.Scanner {
