@@ -11,18 +11,24 @@ func gcd(x, y int) int {
 	return y
 }
 
-func max(x, y int) int {
-	if x > y {
-		return x
+func max(l ...int) int {
+	r := l[0]
+	for _, n := range l {
+		if n > r {
+			r = n
+		}
 	}
-	return y
+	return r
 }
 
-func min(x, y int) int {
-	if x < y {
-		return x
+func min(l ...int) int {
+	r := l[0]
+	for _, n := range l {
+		if n < r {
+			r = n
+		}
 	}
-	return y
+	return r
 }
 
 func abs(x int) int {
