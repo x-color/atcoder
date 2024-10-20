@@ -22,7 +22,8 @@
       "url": "https://atcoder.jp/contests/abc376/tasks/abc376_b",
       "directory": {
         "path": "b",
-        "testdir": "tests"
+        "testdir": "tests",
+        "submit": "main.go"
       }
     },
     {
@@ -32,7 +33,8 @@
       "url": "https://atcoder.jp/contests/abc376/tasks/abc376_c",
       "directory": {
         "path": "c",
-        "testdir": "tests"
+        "testdir": "tests",
+        "submit": "main.go"
       }
     },
     {
@@ -42,7 +44,8 @@
       "url": "https://atcoder.jp/contests/abc376/tasks/abc376_d",
       "directory": {
         "path": "d",
-        "testdir": "tests"
+        "testdir": "tests",
+        "submit": "main.go"
       }
     },
     {
@@ -52,7 +55,8 @@
       "url": "https://atcoder.jp/contests/abc376/tasks/abc376_e",
       "directory": {
         "path": "e",
-        "testdir": "tests"
+        "testdir": "tests",
+        "submit": "main.go"
       }
     },
     {
@@ -62,7 +66,8 @@
       "url": "https://atcoder.jp/contests/abc376/tasks/abc376_f",
       "directory": {
         "path": "f",
-        "testdir": "tests"
+        "testdir": "tests",
+        "submit": "main.go"
       }
     },
     {
@@ -72,7 +77,8 @@
       "url": "https://atcoder.jp/contests/abc376/tasks/abc376_g",
       "directory": {
         "path": "g",
-        "testdir": "tests"
+        "testdir": "tests",
+        "submit": "main.go"
       }
     }
   ]
