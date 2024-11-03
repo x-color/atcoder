@@ -2,24 +2,33 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
-type Section struct {
-	l int
-	r int
-}
-
 func main() {
 	n, m := ReadInt2()
 
-	sections := make([]Section, n)
+	d := make([]int, m)
 	for i := 0; i < n; i++ {
-		sections[i].l, sections[i].r = ReadInt2()
+		l, r := ReadInt2()
+		l--
+		r--
+		d[r] = Max(d[r], l+1)
 	}
 
+	for r := 1; r < m; r++ {
+		d[r] = Max(d[r], d[r-1])
+	}
+
+	c := 0
+	for r := 0; r < m; r++ {
+		c += r - d[r] + 1
+	}
+
+	fmt.Println(c)
 }
 
 // --- utils ---
