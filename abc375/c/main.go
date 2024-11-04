@@ -10,9 +10,32 @@ import (
 func main() {
 	defer out.Flush()
 
-}
+	n := ReadInt()
+	a := make([][]rune, n)
+	for i := 0; i < n; i++ {
+		a[i] = []rune(ReadString())
+	}
 
-// --- utils ---
+	res := make([][]rune, n)
+	for i := 0; i < n; i++ {
+		res[i] = make([]rune, n)
+	}
+	for y := 0; y < n; y++ {
+		for x := 0; x < n; x++ {
+			d := Min(x+1, Min(y+1, Min(n-x, n-y)))
+			d %= 4
+			nx, ny := x, y
+			for i := 0; i < d; i++ {
+				nx, ny = n-ny-1, nx
+			}
+			res[ny][nx] = a[y][x]
+		}
+	}
+
+	for i := 0; i < n; i++ {
+		fmt.Fprintln(out, string(res[i]))
+	}
+}
 
 // --- utils ---
 // --- io ---
