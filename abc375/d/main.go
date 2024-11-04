@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 )
@@ -10,9 +11,32 @@ import (
 func main() {
 	defer out.Flush()
 
-}
+	s := ReadString()
+	n := len(s)
 
-// --- utils ---
+	sum := make([][]int, 26)
+	for i := 0; i < 26; i++ {
+		sum[i] = make([]int, n+1)
+	}
+
+	for i := 0; i < n; i++ {
+		for j := 0; j < 26; j++ {
+			sum[j][i+1] = sum[j][i]
+		}
+		sum[s[i]-'A'][i+1]++
+	}
+
+	c := 0
+	for i := 1; i < n-1; i++ {
+		for j := 0; j < 26; j++ {
+			l := sum[j][i]
+			r := sum[j][n] - sum[j][i+1]
+			c += l * r
+		}
+	}
+
+	fmt.Fprintln(out, c)
+}
 
 // --- utils ---
 // --- io ---
@@ -22,6 +46,7 @@ var (
 )
 
 func init() {
+	in.Buffer([]byte{}, math.MaxInt64)
 	in.Split(bufio.ScanWords)
 }
 
