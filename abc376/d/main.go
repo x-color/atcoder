@@ -10,6 +10,36 @@ import (
 func main() {
 	defer out.Flush()
 
+	_, m := ReadInt2()
+	edges := make(map[int][]int)
+	for i := 0; i < m; i++ {
+		a, b := ReadInt2()
+		if _, ok := edges[a]; !ok {
+			edges[a] = make([]int, 0)
+		}
+		edges[a] = append(edges[a], b)
+	}
+
+	d := make(map[int]int)
+	queue := make([]int, 0)
+	queue = append(queue, 1)
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+
+		for _, next := range edges[node] {
+			if next == 1 {
+				fmt.Println(d[node] + 1)
+				return
+			}
+			if d[next] == 0 {
+				queue = append(queue, next)
+				d[next] = d[node] + 1
+			}
+		}
+	}
+
+	fmt.Println(-1)
 }
 
 // --- utils ---
