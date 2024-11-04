@@ -11,6 +11,27 @@ import (
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	k := ReadInts(n)
+
+	total := 0
+	for i := 0; i < n; i++ {
+		total += k[i]
+	}
+
+	ans := total
+	for i := 0; i < int(math.Pow(2, 20)-1); i++ {
+		c := 0
+		for j := 0; j < n; j++ {
+			if i&(1<<j) != 0 {
+				c += k[j]
+			}
+		}
+
+		ans = Min(ans, Max(total-c, c))
+	}
+
+	fmt.Fprintln(out, ans)
 }
 
 // --- utils ---
