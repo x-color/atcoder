@@ -20,47 +20,25 @@ func main() {
 	a := ReadInts(n)
 	b := ReadInts(m)
 
-	for i := 1; i < n; i++ {
-		if a[i] >= a[i-1] {
-			a[i] = a[i-1]
+	max := Max(b...)
+
+	memo := make([]int, max+1)
+	for i := range memo {
+		memo[i] = -1
+	}
+	for i, v := range a {
+		if v > max {
+			continue
 		}
+
+		for n := v; n <= max; n++ {
+			memo[n] = i + 1
+		}
+		max = v - 1
 	}
 
-	zip := []A{
-		{p: 1, v: a[0]},
-	}
-	for i := 1; i < n; i++ {
-		if a[i] < a[i-1] {
-			zip = append(zip, A{p: i + 1, v: a[i]})
-		}
-	}
-
-	zip = append(zip, A{p: zip[len(zip)-1].p + 1, v: math.MinInt32})
-	zip = append([]A{{p: -1, v: math.MaxInt32}}, zip...)
 	for _, v := range b {
-		fmt.Fprintln(out, bs(zip, v))
-	}
-}
-
-func bs(zip []A, target int) int {
-	r := len(zip)
-	l := 0
-	for r-l > 1 {
-		mid := (r + l) / 2
-		if zip[mid].v == target {
-			return zip[mid].p
-		}
-		if zip[mid].v > target {
-			l = mid
-		} else {
-			r = mid
-		}
-	}
-
-	if zip[r].v != math.MinInt32 {
-		return zip[r].p
-	} else {
-		return -1
+		fmt.Fprintln(out, memo[v])
 	}
 }
 
@@ -136,11 +114,14 @@ func Min[T Number](a, b T) T {
 	return b
 }
 
-func Max[T Number](a, b T) T {
-	if a > b {
-		return a
+func Max[T Number](v ...T) T {
+	max := v[0]
+	for _, n := range v {
+		if n > max {
+			max = n
+		}
 	}
-	return b
+	return max
 }
 
 func Abs[T Number](a T) T {
