@@ -62,28 +62,6 @@ func isPrime(n int) bool {
 	return true
 }
 
-func divCount(n int) int {
-	pf := make(map[int]int)
-	for i := 2; i*i <= n; i++ {
-		c := 0
-		for n%i == 0 {
-			c++
-			n /= i
-		}
-		pf[i] = c
-	}
-
-	if n != 1 {
-		pf[n]++
-	}
-
-	c := 1
-	for _, v := range pf {
-		c *= v + 1
-	}
-	return c
-}
-
 // --- utils ---
 // --- io ---
 var (
