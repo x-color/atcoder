@@ -11,6 +11,36 @@ import (
 func main() {
 	defer out.Flush()
 
+	n, l := ReadInt2()
+	k := ReadInt()
+	a := ReadInts(n)
+
+	f := func(n int) bool {
+		pieces := 0
+		prev := 0
+		for _, v := range a {
+			if v-prev >= n {
+				pieces++
+				prev = v
+			}
+		}
+		if l-prev >= n {
+			pieces++
+		}
+		return pieces >= k+1
+	}
+
+	left, right := -1, l+1
+	for right-left > 1 {
+		mid := (left + right) / 2
+		if f(mid) {
+			left = mid
+		} else {
+			right = mid
+		}
+	}
+
+	fmt.Fprintln(out, left)
 }
 
 // --- utils ---
