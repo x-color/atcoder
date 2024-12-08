@@ -6,6 +6,8 @@ import (
 	"math"
 	"os"
 	"strconv"
+
+	"slices"
 )
 
 func main() {
@@ -15,7 +17,12 @@ func main() {
 	k := ReadInt()
 	a := ReadInts(n)
 
-	f := func(n int) bool {
+	distances := make([]int, l+1)
+	for i := 0; i <= l; i++ {
+		distances[i] = i
+	}
+
+	left, _ := slices.BinarySearchFunc(distances, 0, func(n, _ int) int {
 		pieces := 0
 		prev := 0
 		for _, v := range a {
@@ -27,20 +34,13 @@ func main() {
 		if l-prev >= n {
 			pieces++
 		}
-		return pieces >= k+1
-	}
 
-	left, right := -1, l+1
-	for right-left > 1 {
-		mid := (left + right) / 2
-		if f(mid) {
-			left = mid
-		} else {
-			right = mid
-		}
-	}
+		// This statement is instead of
+		// if pieces >= k +1 { return -1 } else { return 1 }
+		return k - pieces
+	})
 
-	fmt.Fprintln(out, left)
+	fmt.Fprintln(out, left-1)
 }
 
 // --- utils ---
