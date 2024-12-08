@@ -12,14 +12,54 @@ func main() {
 	defer out.Flush()
 
 	n := ReadInt()
+
 	c := 0
-	for i := 1; i <= n; i++ {
-		if divCount(i) == 9 {
+	n8 := int(math.Sqrt(math.Sqrt(math.Sqrt(float64(n)))))
+	for i := 2; i <= n8; i++ {
+		if !isPrime(i) {
+			continue
+		}
+		p := int(math.Pow(float64(i), 8))
+		if p <= n {
 			c++
 		}
 	}
 
+	primes := make([]int, 0)
+	n2 := int(math.Sqrt(float64(n)))
+	for i := 2; i <= n2; i++ {
+		if isPrime(i) {
+			primes = append(primes, i)
+		}
+	}
+
+	k := len(primes) - 1
+	for i := range primes {
+		for j := k; j > i; j-- {
+			m := primes[i] * primes[i] * primes[j] * primes[j]
+			if m <= n {
+				c += j - i
+				k = j
+				break
+			}
+		}
+	}
+
 	fmt.Fprintln(out, c)
+}
+
+func isPrime(n int) bool {
+	if n == 1 {
+		return false
+	}
+
+	for i := 2; i*i <= n; i++ {
+		if n%i == 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 func divCount(n int) int {
