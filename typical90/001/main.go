@@ -6,8 +6,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-
-	"slices"
 )
 
 func main() {
@@ -17,12 +15,7 @@ func main() {
 	k := ReadInt()
 	a := ReadInts(n)
 
-	distances := make([]int, l+1)
-	for i := 0; i <= l; i++ {
-		distances[i] = i
-	}
-
-	left, _ := slices.BinarySearchFunc(distances, 0, func(n, _ int) int {
+	f := func(n int) bool {
 		pieces := 0
 		prev := 0
 		for _, v := range a {
@@ -34,13 +27,27 @@ func main() {
 		if l-prev >= n {
 			pieces++
 		}
+		return pieces >= k+1
+	}
 
-		// This statement is instead of
-		// if pieces >= k +1 { return -1 } else { return 1 }
-		return k - pieces
-	})
+	ans := BinarySearch(0, l+1, f)
+	fmt.Fprintln(out, ans)
+}
 
-	fmt.Fprintln(out, left-1)
+// `ok` must be the maximum value that satisfies the condition.
+// `ng` must be the minmum value that does not satisfy the condition.
+// `check` is a function that checks if the value satisfies the condition.
+func BinarySearch(ok, ng int, check func(v int) bool) int {
+	for Abs(ok-ng) > 1 {
+		m := (ok + ng) / 2
+		if check(m) {
+			ok = m
+		} else {
+			ng = m
+		}
+	}
+
+	return ok
 }
 
 // --- utils ---
