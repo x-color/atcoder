@@ -11,6 +11,47 @@ import (
 func main() {
 	defer out.Flush()
 
+	h, w := ReadInt2()
+	board := make([][]int, h)
+	for i := 0; i < h; i++ {
+		board[i] = ReadInts(w)
+	}
+
+	// PIE: principle of inclusion and exclusion
+	// ---
+	// Node(x,y) = Row(x) + Col(y) - Board(x,y)
+
+	ans := make([][]int, h)
+	for i := 0; i < h; i++ {
+		ans[i] = make([]int, w)
+		for j := 0; j < w; j++ {
+			ans[i][j] -= board[i][j]
+		}
+	}
+
+	for y := 0; y < h; y++ {
+		row := 0
+		for x := 0; x < w; x++ {
+			row += board[y][x]
+		}
+		for x := 0; x < w; x++ {
+			ans[y][x] += row
+		}
+	}
+
+	for x := 0; x < w; x++ {
+		col := 0
+		for y := 0; y < h; y++ {
+			col += board[y][x]
+		}
+		for y := 0; y < h; y++ {
+			ans[y][x] += col
+		}
+	}
+
+	for i := 0; i < h; i++ {
+		PrintSlice(ans[i])
+	}
 }
 
 // --- utils ---
