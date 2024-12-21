@@ -11,6 +11,48 @@ import (
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	loads := make(map[int][]int)
+	for i := 0; i < n-1; i++ {
+		a, b := ReadInt2()
+		if _, ok := loads[a]; !ok {
+			loads[a] = []int{}
+		}
+		if _, ok := loads[b]; !ok {
+			loads[b] = []int{}
+		}
+		loads[a] = append(loads[a], b)
+		loads[b] = append(loads[b], a)
+	}
+
+	// u is the farthest node from 1
+	u, _ := dfs(loads, make(map[int]bool), 1, 0)
+	// d is a distance from u to the farthest node
+	// d is a diameter of the tree
+	_, d := dfs(loads, make(map[int]bool), u, 0)
+
+	fmt.Fprintln(out, d+1)
+}
+
+// dfs returns node and distance
+func dfs(loads map[int][]int, visited map[int]bool, cur int, dis int) (int, int) {
+	if visited[cur] {
+		return 0, 0
+	}
+
+	visited[cur] = true
+
+	node := cur
+	max := dis
+	for _, next := range loads[cur] {
+		n, d := dfs(loads, visited, next, dis+1)
+		if d > max {
+			node = n
+			max = d
+		}
+	}
+
+	return node, max
 }
 
 // --- utils ---
