@@ -11,6 +11,32 @@ import (
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+
+	max := 1 << n
+	ans := make([]string, 0)
+	for m := 0; m < max; m++ {
+		l := m
+		c := 0
+		for i := 0; i < n && c >= 0; i++ {
+			c += -1 + (l&1)*2
+			l >>= 1
+		}
+
+		if c == 0 {
+			k := m
+			s := ""
+			for i := 0; i < n; i++ {
+				s = string('('+k&1) + s
+				k >>= 1
+			}
+			ans = append(ans, s)
+		}
+	}
+
+	for _, s := range ans {
+		fmt.Fprintln(out, s)
+	}
 }
 
 // --- utils ---
