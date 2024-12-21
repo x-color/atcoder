@@ -13,29 +13,25 @@ func main() {
 
 	n := ReadInt()
 
-	max := 1 << n
-	ans := make([]string, 0)
-	for m := 0; m < max; m++ {
-		l := m
+	// This algorithm regards '(' as 0 and ')' as 1.
+	// e.g.
+	// ()() => 0101
+
+	for b := 0; b < 1<<n; b++ {
 		c := 0
-		for i := 0; i < n && c >= 0; i++ {
-			c += -1 + (l&1)*2
-			l >>= 1
-		}
-
-		if c == 0 {
-			k := m
-			s := ""
-			for i := 0; i < n; i++ {
-				s = string('('+k&1) + s
-				k >>= 1
+		bytes := make([]byte, n)
+		for i := n - 1; i >= 0 && c >= 0; i-- {
+			if b&(1<<i) == 0 {
+				c++
+				bytes[n-i-1] = '('
+			} else {
+				c--
+				bytes[n-i-1] = ')'
 			}
-			ans = append(ans, s)
 		}
-	}
-
-	for _, s := range ans {
-		fmt.Fprintln(out, s)
+		if c == 0 {
+			fmt.Fprintln(out, string(bytes))
+		}
 	}
 }
 
