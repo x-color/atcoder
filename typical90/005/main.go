@@ -11,6 +11,24 @@ import (
 func main() {
 	defer out.Flush()
 
+	n, b, k := ReadInt3()
+	c := ReadInts(k)
+
+	dp := make([][]int, n)
+	dp[0] = make([]int, b)
+	for _, m := range c {
+		dp[0][m%b]++
+	}
+	for i := 1; i < n; i++ {
+		dp[i] = make([]int, b)
+		for r := 0; r < b; r++ {
+			for _, m := range c {
+				dp[i][(10*r+m)%b] = (dp[i][(10*r+m)%b] + dp[i-1][r]) % 1000_000_007
+			}
+		}
+	}
+
+	fmt.Fprintln(out, dp[n-1][0])
 }
 
 // --- utils ---
