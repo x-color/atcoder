@@ -5,12 +5,43 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 )
 
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	nexts := make(map[int][]int)
+	for i := 0; i < n-1; i++ {
+		u, v := ReadInt2()
+		if _, ok := nexts[u]; !ok {
+			nexts[u] = make([]int, 0)
+		}
+		if _, ok := nexts[v]; !ok {
+			nexts[v] = make([]int, 0)
+		}
+		nexts[u] = append(nexts[u], v)
+		nexts[v] = append(nexts[v], u)
+	}
+
+	for node := range nexts {
+		sort.Slice(nexts[node], func(i, j int) bool {
+			return len(nexts[nexts[node][i]]) > len(nexts[nexts[node][j]])
+		})
+	}
+
+	ans := n
+	for node := 1; node <= n; node++ {
+		for i, next := range nexts[node] {
+			x := i + 1
+			y := len(nexts[next]) - 1
+			ans = Min(ans, n-(1+x+x*y))
+		}
+	}
+
+	fmt.Fprintln(out, ans)
 }
 
 // --- utils ---
