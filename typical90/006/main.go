@@ -11,6 +11,29 @@ import (
 func main() {
 	defer out.Flush()
 
+	n, k := ReadInt2()
+	s := ReadString()
+
+	ans := ""
+	st := 0
+	for i := 0; i < k; i++ {
+		for r := 'a'; r <= 'z'; r++ {
+			for j := st; j < n; j++ {
+				if s[j] != byte(r) {
+					continue
+				}
+				if n-j >= k-i {
+					ans += string(s[j])
+					st = j + 1
+					break
+				}
+			}
+			if len(ans) == i+1 {
+				break
+			}
+		}
+	}
+	fmt.Fprintln(out, ans)
 }
 
 // --- utils ---
