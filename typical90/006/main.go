@@ -14,39 +14,35 @@ func main() {
 	n, k := ReadInt2()
 	s := ReadString()
 
-	nexts := nextRunesIdx(s)
+	ans := make([]rune, k)
+	// l, rは部分文字列を対象としたウィンドウの左端と右端を表す。
+	// このアルゴリズムでは、文字列Sの各文字を一つづつ確認し、その文字を部分文字列に挿入することを繰り返す。
+	// 挿入位置は、部分文字列が常に昇順に並んでいることを利用して二部探索で探す。
+	// 選択されている文字よりも辞書順で遅い文字が部分文字列上に存在しない場合は、末尾に追加。
+	// もし、存在する場合は既存の文字と置換する。この際に、その後の置換処理で既存の文字を置換していくために、検索ウィンドウを調整する。
+	// これは、置換箇所よりも後半の既存文字列は新たに挿入された文字よりも文字列S上で手前にあり利用してはならず、
+	// 今後出現する文字で全て置換する必要があるため。
+	// 文字列Sの残存文字数がKを下回った場合、その時点で部分文字列の先頭の文字を置換することはできなくなるので、
+	// （置換した場合、部分文字列中の後続の文字も全て置換する必要があるが、対象文字数が残存数を切るため置換してはならない）
+	// 検索ウィンドウを調整する。
+	l := -1
+	r := 0
+	for i, c := range s {
+		if n-i < k {
+			l++
+		}
 
-	ans := make([]byte, k)
-	j := 0
-	for i := 0; i < k; i++ {
-		for r := 'a'; r <= 'z'; r++ {
-			next := nexts[j][r-'a']
-			if next == -1 {
-				continue
-			}
-			if n-next >= k-i {
-				ans[i] = byte(r)
-				j = next + 1
-				break
-			}
+		j := BinarySearch(r, l, func(v int) bool {
+			return ans[v] > c
+		})
+
+		if j < k {
+			ans[j] = c
+			r = j + 1
 		}
 	}
-	fmt.Fprintln(out, string(ans))
-}
 
-func nextRunesIdx(s string) [][]int {
-	n := len(s)
-	nexts := make([][]int, n+1)
-	nexts[n] = make([]int, 26)
-	for i := range nexts[n] {
-		nexts[n][i] = -1
-	}
-	for i := n - 1; i >= 0; i-- {
-		nexts[i] = make([]int, 26)
-		copy(nexts[i], nexts[i+1])
-		nexts[i][s[i]-'a'] = i
-	}
-	return nexts
+	fmt.Fprintln(out, string(ans))
 }
 
 // --- utils ---
@@ -194,6 +190,24 @@ func Bfs[T any](first []T, f func(node T) []T) {
 			q.Push(v)
 		}
 	}
+}
+
+// `ok` must be the max/min value that satisfies the condition.
+// `ng` must be the min/max value that does not satisfy the condition.
+// The range must be (ok, ng] or [ng, ok).
+// The return value is the same value of `v` that satisfies the condition. (`v-1` does not satisfy the condition).
+// `check` is a function that checks if the value satisfies the condition.
+func BinarySearch(ok, ng int, check func(v int) bool) int {
+	for Abs(ok-ng) > 1 {
+		m := (ok + ng) / 2
+		if check(m) {
+			ok = m
+		} else {
+			ng = m
+		}
+	}
+
+	return ok
 }
 
 // --- board ---
