@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 )
 
-type Vector struct {
+type Point struct {
 	x int
 	y int
 }
@@ -17,41 +18,46 @@ func main() {
 	defer out.Flush()
 
 	n := ReadInt()
-	vecs := make([]Vector, n)
-	for i := range vecs {
+	points := make([]Point, n)
+	for i := range points {
 		x, y := ReadInt2()
-		vecs[i] = Vector{x, y}
+		points[i] = Point{x, y}
 	}
 
 	max := 0.0
-	for i := 0; i < n-2; i++ {
-		v1 := vecs[i]
-		for j := i + 1; j < n-1; j++ {
-			v2 := vecs[j]
-			for k := j + 1; k < n; k++ {
-				v3 := vecs[k]
-				max = Max(
+	for i, pi := range points {
+		rd := make([]float64, 0)
+		for j, pj := range points {
+			if i == j {
+				continue
+			}
+			w := Point{pj.x - pi.x, pj.y - pi.y}
+			rd = append(rd, math.Atan2(float64(w.y), float64(w.x)))
+		}
+		sort.Float64s(rd)
+		for _, r := range rd {
+			opposite := r + math.Pi
+			if opposite >= 2*math.Pi {
+				opposite -= 2 * math.Pi
+			}
+
+			idx := sort.SearchFloat64s(rd, opposite)
+			if idx < n-1 {
+				max = math.Max(
 					max,
-					degree(v1, v2, v3),
-					degree(v2, v1, v3),
-					degree(v3, v2, v1),
+					math.Min(math.Abs(rd[idx]-r), 2*math.Pi-math.Abs(rd[idx]-r)),
+				)
+			}
+			if idx > 0 {
+				max = math.Max(
+					max,
+					math.Min(math.Abs(rd[idx-1]-r), 2*math.Pi-math.Abs(rd[idx-1]-r)),
 				)
 			}
 		}
 	}
 
-	fmt.Fprintln(out, max)
-}
-
-func degree(a, b, c Vector) float64 {
-	u := Vector{b.x - a.x, b.y - a.y}
-	v := Vector{c.x - a.x, c.y - a.y}
-
-	inner := float64(u.x*v.x + u.y*v.y)
-	lu := math.Sqrt(float64(u.x*u.x + u.y*u.y))
-	lv := math.Sqrt(float64(v.x*v.x + v.y*v.y))
-
-	return (math.Acos(inner/(lu*lv)) / math.Pi) * 180
+	fmt.Fprintln(out, max/math.Pi*180)
 }
 
 // --- utils ---
@@ -199,6 +205,24 @@ func Bfs[T any](first []T, f func(node T) []T) {
 			q.Push(v)
 		}
 	}
+}
+
+// `ok` must be the max/min value that satisfies the condition.
+// `ng` must be the min/max value that does not satisfy the condition.
+// The range must be (ok, ng] or [ng, ok).
+// The return value is the same value of `v` that satisfies the condition. (`v-1` does not satisfy the condition).
+// `check` is a function that checks if the value satisfies the condition.
+func BinarySearch(ok, ng int, check func(v int) bool) int {
+	for Abs(ok-ng) > 1 {
+		m := (ok + ng) / 2
+		if check(m) {
+			ok = m
+		} else {
+			ng = m
+		}
+	}
+
+	return ok
 }
 
 // --- board ---
