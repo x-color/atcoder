@@ -16,7 +16,7 @@ func main() {
 
 	nexts := nextRunesIdx(s)
 
-	ans := ""
+	ans := make([]byte, k)
 	j := 0
 	for i := 0; i < k; i++ {
 		for r := 'a'; r <= 'z'; r++ {
@@ -25,13 +25,13 @@ func main() {
 				continue
 			}
 			if n-next >= k-i {
-				ans += string(r)
+				ans[i] = byte(r)
 				j = next + 1
 				break
 			}
 		}
 	}
-	fmt.Fprintln(out, ans)
+	fmt.Fprintln(out, string(ans))
 }
 
 func nextRunesIdx(s string) [][]int {
