@@ -8,9 +8,50 @@ import (
 	"strconv"
 )
 
+type Vector struct {
+	x int
+	y int
+}
+
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	vecs := make([]Vector, n)
+	for i := range vecs {
+		x, y := ReadInt2()
+		vecs[i] = Vector{x, y}
+	}
+
+	max := 0.0
+	for i := 0; i < n-2; i++ {
+		v1 := vecs[i]
+		for j := i + 1; j < n-1; j++ {
+			v2 := vecs[j]
+			for k := j + 1; k < n; k++ {
+				v3 := vecs[k]
+				max = Max(
+					max,
+					degree(v1, v2, v3),
+					degree(v2, v1, v3),
+					degree(v3, v2, v1),
+				)
+			}
+		}
+	}
+
+	fmt.Fprintln(out, max)
+}
+
+func degree(a, b, c Vector) float64 {
+	u := Vector{b.x - a.x, b.y - a.y}
+	v := Vector{c.x - a.x, c.y - a.y}
+
+	inner := float64(u.x*v.x + u.y*v.y)
+	lu := math.Sqrt(float64(u.x*u.x + u.y*u.y))
+	lv := math.Sqrt(float64(v.x*v.x + v.y*v.y))
+
+	return (math.Acos(inner/(lu*lv)) / math.Pi) * 180
 }
 
 // --- utils ---
