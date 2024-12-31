@@ -11,6 +11,37 @@ import (
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	c, p := make([]int, n), make([]int, n)
+	for i := 0; i < n; i++ {
+		c[i], p[i] = ReadInt2()
+	}
+
+	q := ReadInt()
+	l, r := make([]int, q), make([]int, q)
+	for i := 0; i < q; i++ {
+		l[i], r[i] = ReadInt2()
+	}
+
+	table := [2][]int{}
+	table[0] = make([]int, n)
+	table[1] = make([]int, n)
+	table[c[0]-1][0] = p[0]
+	for i := 1; i < n; i++ {
+		table[0][i] = table[0][i-1]
+		table[1][i] = table[1][i-1]
+		table[c[i]-1][i] += p[i]
+	}
+
+	for i := 0; i < q; i++ {
+		sum1 := table[0][r[i]-1]
+		sum2 := table[1][r[i]-1]
+		if l[i] > 1 {
+			sum1 -= table[0][l[i]-2]
+			sum2 -= table[1][l[i]-2]
+		}
+		fmt.Fprintln(out, sum1, sum2)
+	}
 }
 
 // --- utils ---
