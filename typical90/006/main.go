@@ -14,26 +14,39 @@ func main() {
 	n, k := ReadInt2()
 	s := ReadString()
 
+	nexts := nextRunesIdx(s)
+
 	ans := ""
-	st := 0
+	j := 0
 	for i := 0; i < k; i++ {
 		for r := 'a'; r <= 'z'; r++ {
-			for j := st; j < n; j++ {
-				if s[j] != byte(r) {
-					continue
-				}
-				if n-j >= k-i {
-					ans += string(s[j])
-					st = j + 1
-					break
-				}
+			next := nexts[j][r-'a']
+			if next == -1 {
+				continue
 			}
-			if len(ans) == i+1 {
+			if n-next >= k-i {
+				ans += string(r)
+				j = next + 1
 				break
 			}
 		}
 	}
 	fmt.Fprintln(out, ans)
+}
+
+func nextRunesIdx(s string) [][]int {
+	n := len(s)
+	nexts := make([][]int, n+1)
+	nexts[n] = make([]int, 26)
+	for i := range nexts[n] {
+		nexts[n][i] = -1
+	}
+	for i := n - 1; i >= 0; i-- {
+		nexts[i] = make([]int, 26)
+		copy(nexts[i], nexts[i+1])
+		nexts[i][s[i]-'a'] = i
+	}
+	return nexts
 }
 
 // --- utils ---
