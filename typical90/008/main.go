@@ -8,9 +8,45 @@ import (
 	"strconv"
 )
 
+const MOD = 1000_000_007
+
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	s := ReadString()
+
+	dp := [7][]int{}
+	for i := range dp {
+		dp[i] = make([]int, n)
+	}
+
+	if s[0] == 'a' {
+		dp[0][0] = 1
+	}
+	for i := 1; i < n; i++ {
+		for j := range dp {
+			dp[j][i] = dp[j][i-1]
+		}
+		switch s[i] {
+		case 'a':
+			dp[0][i] = (dp[0][i-1] + 1) % MOD
+		case 't':
+			dp[1][i] = (dp[0][i-1] + dp[1][i-1]) % MOD
+		case 'c':
+			dp[2][i] = (dp[1][i-1] + dp[2][i-1]) % MOD
+		case 'o':
+			dp[3][i] = (dp[2][i-1] + dp[3][i-1]) % MOD
+		case 'd':
+			dp[4][i] = (dp[3][i-1] + dp[4][i-1]) % MOD
+		case 'e':
+			dp[5][i] = (dp[4][i-1] + dp[5][i-1]) % MOD
+		case 'r':
+			dp[6][i] = (dp[5][i-1] + dp[6][i-1]) % MOD
+		}
+	}
+
+	fmt.Fprintln(out, dp[6][n-1])
 }
 
 // --- utils ---
