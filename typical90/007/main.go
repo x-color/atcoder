@@ -5,12 +5,32 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 )
 
 func main() {
 	defer out.Flush()
 
+	n := ReadInt()
+	a := ReadInts(n)
+	q := ReadInt()
+	b := ReadInts(q)
+
+	sort.Ints(a)
+	for _, v := range b {
+		i := BinarySearch(len(a), 0, func(i int) bool {
+			return a[i] > v
+		})
+		min := 1000_000_000
+		if i < n {
+			min = Min(min, Abs(a[i]-v))
+		}
+		if i > 0 {
+			min = Min(min, Abs(a[i-1]-v))
+		}
+		fmt.Fprintln(out, min)
+	}
 }
 
 // --- utils ---
@@ -158,6 +178,24 @@ func Bfs[T any](first []T, f func(node T) []T) {
 			q.Push(v)
 		}
 	}
+}
+
+// `ok` must be the max/min value that satisfies the condition.
+// `ng` must be the min/max value that does not satisfy the condition.
+// The range must be (ok, ng] or [ng, ok).
+// The return value is the same value of `v` that satisfies the condition. (`v-1` does not satisfy the condition).
+// `check` is a function that checks if the value satisfies the condition.
+func BinarySearch(ok, ng int, check func(v int) bool) int {
+	for Abs(ok-ng) > 1 {
+		m := (ok + ng) / 2
+		if check(m) {
+			ok = m
+		} else {
+			ng = m
+		}
+	}
+
+	return ok
 }
 
 // --- board ---
