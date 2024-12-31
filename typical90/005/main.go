@@ -8,27 +8,71 @@ import (
 	"strconv"
 )
 
+const MOD = 1000000007
+
 func main() {
 	defer out.Flush()
 
 	n, b, k := ReadInt3()
 	c := ReadInts(k)
 
-	dp := make([][]int, n)
-	dp[0] = make([]int, b)
-	for _, m := range c {
-		dp[0][m%b]++
+	// N = 10^18
+	// log2(N) = 62
+	log2 := 62
+
+	// mod[i] = 10^(2^i) % b
+	mod := make([]int, log2)
+	mod[0] = 10 % b
+	for i := 1; i < len(mod); i++ {
+		mod[i] = (mod[i-1] * mod[i-1]) % b
 	}
-	for i := 1; i < n; i++ {
-		dp[i] = make([]int, b)
-		for r := 0; r < b; r++ {
-			for _, m := range c {
-				dp[i][(10*r+m)%b] = (dp[i][(10*r+m)%b] + dp[i-1][r]) % 1000_000_007
-			}
+
+	// ddp is a table for Doubling DP
+	// このテーブルは2^i桁で余りがr個の数の個数を保持する
+	// 本来は1~N桁の余りの数を保持する必要がある。しかし、全ての数は２の累乗で表現できるため、
+	// 全ての桁の代わりに2の累乗のデータだけを保持する。
+	// これにより、データ数と計算量をlog2(N)まで削減可能
+	ddp := make([][]int, log2)
+	for i := range ddp {
+		ddp[i] = make([]int, b)
+	}
+
+	for _, m := range c {
+		ddp[0][m%b]++
+	}
+
+	// dp[i + j]は数値を前後半に分けた際に、前半が2^i桁、後半が2^j桁である数に対するデータを保持する。
+	// このデータは、2^i桁の数の個数と2^j桁の数の個数を掛け合わせることで算出可能。
+	// dp[i + j][(p * (10j % B) + q) % B] += dp[i][p] * dp[j][q]
+	for i := 1; i < log2; i++ {
+		ddp[i] = mul(ddp[i-1], ddp[i-1], mod[i-1], b)
+	}
+
+	// resはn桁の数の個数を保持する。
+	// 例） n = 12桁の場合
+	// 12 = 8 + 4 = 2^3 + 2^2
+	// 2^3桁の数の個数と2^2桁の数の個数を掛け合わせることで、12桁の数の個数を求める。
+	res := make([]int, b)
+	res[0] = 1
+	for i := 0; i < log2; i++ {
+		if n&(1<<i) > 0 {
+			res = mul(res, ddp[i], mod[i], b)
 		}
 	}
 
-	fmt.Fprintln(out, dp[n-1][0])
+	// bの倍数が求めるべき答えなので、余りが0の個数を出力する
+	fmt.Fprintln(out, res[0])
+}
+
+func mul(dpi []int, dpj []int, tj int, b int) []int {
+	res := make([]int, b)
+	for p := 0; p < b; p++ {
+		for q := 0; q < b; q++ {
+			res[(p*tj+q)%b] += dpi[p] * dpj[q]
+			res[(p*tj+q)%b] %= MOD
+		}
+	}
+	return res
 }
 
 // --- utils ---
