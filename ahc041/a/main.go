@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sort"
 	"strconv"
-
-	"math/rand"
 )
 
 type Node struct {
+	n         int
 	beauty    int
+	height    int
 	neighbors []int
 }
 
@@ -26,87 +27,102 @@ func main() {
 	Nodes = make([]Node, n)
 	for i, b := range a {
 		Nodes[i] = Node{
+			n:         i,
 			beauty:    b,
+			height:    0,
 			neighbors: []int{},
 		}
 	}
-	u, v := make([]int, m), make([]int, m)
 	for i := 0; i < m; i++ {
-		u[i], v[i] = ReadInt2()
-		Nodes[u[i]].neighbors = append(Nodes[u[i]].neighbors, v[i])
-		Nodes[v[i]].neighbors = append(Nodes[v[i]].neighbors, u[i])
+		u, v := ReadInt2()
+		Nodes[u].neighbors = append(Nodes[u].neighbors, v)
+		Nodes[v].neighbors = append(Nodes[v].neighbors, u)
 	}
 
-	used := make([]bool, n)
-	candidates := make([]int, n)
-	for i := range candidates {
-		candidates[i] = i
+	NodesIdx := make([]int, n)
+	for i := range NodesIdx {
+		NodesIdx[i] = i
 	}
-	trees := make([][]int, 0)
-	for len(candidates) > 0 {
-		root := candidates[rand.Intn(len(candidates))]
-		used[root] = true
-		path, _ := dfs(root, used, 0, h)
-		trees = append(trees, path)
-		for _, node := range path {
-			i := BinarySearch(len(candidates), -1, func(i int) bool {
-				return candidates[i] >= node
-			})
-			candidates = append(candidates[:i], candidates[i+1:]...)
-		}
-	}
+	sort.Slice(NodesIdx, func(i, j int) bool {
+		return Nodes[NodesIdx[i]].beauty < Nodes[NodesIdx[j]].beauty
+	})
 
-	ans := make([]int, n)
-	for _, tree := range trees {
-		ans[tree[0]] = -1
-		for i := 1; i < len(tree); i++ {
-			ans[tree[i]] = tree[i-1]
-		}
+	root := make([]int, n)
+	for i := range root {
+		root[i] = -2
 	}
-
-	PrintSlice(ans)
-}
-
-func dfs(node int, used []bool, h, limit int) ([]int, int) {
-	beauty := Nodes[node].beauty * (h + 1)
-	if h == limit-1 {
-		return []int{node}, beauty
-	}
-	bestPath := []int{node}
-	bestBeauty := beauty
-	for _, i := range Nodes[node].neighbors {
-		if used[i] {
+	for _, idx := range NodesIdx {
+		if root[idx] != -2 {
 			continue
 		}
-		used[i] = true
-		path, score := dfs(i, used, h+1, limit)
-		score += beauty
-		if score > bestBeauty {
-			bestBeauty = score
-			bestPath = append([]int{node}, path...)
-		}
-		for _, j := range path {
-			used[j] = false
-		}
-	}
-	for _, i := range bestPath {
-		used[i] = true
+
+		root[idx] = -1
+		// grow(idx, idx, root, 0, h)
+		// root[idx] = -1
+
+		Bfs([]int{idx}, func(cur int) []int {
+			if Nodes[cur].height == h {
+				return []int{}
+			}
+			nexts := make([]int, 0, len(Nodes[cur].neighbors))
+			for _, next := range Nodes[cur].neighbors {
+				if root[next] != -2 {
+					continue
+				}
+
+				root[next] = cur
+				Nodes[next].height = Nodes[cur].height + 1
+				nexts = append(nexts, next)
+			}
+			PrintSliceForAnime(root, 0.1)
+			return nexts
+		})
+
 	}
 
-	return bestPath, bestBeauty
+	PrintSlice(root)
 }
 
-func evaluate(root int, visited []bool, height int) int {
-	if visited[root] {
+func grow(pre, cur int, root []int, height, limit int) int {
+	if height == limit {
 		return 0
 	}
-	beauty := Nodes[root].beauty * (height + 1)
-	visited[root] = true
-	for _, i := range Nodes[root].neighbors {
-		beauty += evaluate(i, visited, height+1)
+
+	root[cur] = pre
+	max := 0
+	for _, next := range Nodes[cur].neighbors {
+		if root[next] != -2 {
+			continue
+		}
+		score := grow(cur, next, root, height+1, limit)
+		if score > 0 {
+			max = score
+			break
+		}
 	}
-	return beauty
+	return Nodes[cur].beauty*(height+1) + max
 }
+
+var count int
+
+func PrintSliceForAnime(l []int, rate float32) {
+	if count%int(rate*100) == 0 {
+		PrintSlice(l)
+	}
+	count++
+}
+
+// func evaluate(root int, visited []bool, height int) int {
+// 	if visited[root] {
+// 		return 0
+// 	}
+// 	beauty := Nodes[root].beauty * (height + 1)
+// 	visited[root] = true
+// 	for _, i := range Nodes[root].neighbors {
+// 		beauty += evaluate(i, visited, height+1)
+// 	}
+// 	return beauty
+// }
 
 // --- utils ---
 // --- io ---
@@ -159,10 +175,13 @@ func ReadStringInt() (string, int) {
 	return ReadString(), ReadInt()
 }
 
-func PrintSlice[T any](l []T) {
+func PrintSlice(l []int) {
 	v := make([]any, len(l))
 	for i, n := range l {
-		v[i] = n
+		if n == -2 {
+			n = -1
+		}
+		v[i] = any(n)
 	}
 	fmt.Fprintln(out, v...)
 }
