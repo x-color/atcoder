@@ -64,11 +64,21 @@ func main() {
 			if Nodes[cur].height == h {
 				return []int{}
 			}
+
+			max := len(Nodes[cur].neighbors)*(Nodes[cur].height+1)/h + 1
+			limit := Min(len(Nodes[cur].neighbors), max)
+
+			c := 0
 			nexts := make([]int, 0, len(Nodes[cur].neighbors))
 			for _, next := range Nodes[cur].neighbors {
 				if root[next] != -2 {
 					continue
 				}
+
+				if c == limit {
+					break
+				}
+				c++
 
 				root[next] = cur
 				Nodes[next].height = Nodes[cur].height + 1
@@ -106,7 +116,7 @@ func grow(pre, cur int, root []int, height, limit int) int {
 var count int
 
 func PrintSliceForAnime(l []int, rate float32) {
-	if count%int(rate*100) == 0 {
+	if rate > 0 && count%int(rate*100) == 0 {
 		PrintSlice(l)
 	}
 	count++
