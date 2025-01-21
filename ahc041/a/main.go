@@ -47,6 +47,12 @@ func main() {
 		return Nodes[NodesIdx[i]].beauty < Nodes[NodesIdx[j]].beauty
 	})
 
+	for i := range Nodes {
+		sort.Slice(Nodes[i].neighbors, func(j, k int) bool {
+			return Nodes[Nodes[i].neighbors[j]].beauty < Nodes[Nodes[i].neighbors[k]].beauty
+		})
+	}
+
 	root := make([]int, n)
 	for i := range root {
 		root[i] = -2
